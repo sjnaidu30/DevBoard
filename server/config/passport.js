@@ -3,7 +3,7 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import dotenv from "dotenv";
 import pool from "../db/index.js";
 
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: "../../.env" });
 
 passport.use(
   new GitHubStrategy(
