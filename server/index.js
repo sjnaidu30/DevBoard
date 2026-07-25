@@ -8,6 +8,7 @@ import connectPgSimple from "connect-pg-simple";
 import authRouter from "./routes/auth.js";
 import standupRouter from "./routes/standups.js";
 import commitsRouter from "./routes/commits.js";
+import { startDigestJob } from "./jobs/digestJob.js";
 
 dotenv.config({ path: "../.env" });
 const PgSession = connectPgSimple(session);
@@ -49,6 +50,28 @@ app.get("/test-db", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+app.get("/test-email", async (req, res) => {
+  try {
+    const { sendDigestEmail } = await import("./services/emailService.js");
+    await sendDigestEmail(
+      process.env.EMAIL_USER,
+      "DevBoard Team",
+      [
+        {
+          name: "Jigisha N",
+          yesterday: "Built standup routes and controllers",
+          today: "Testing email digest",
+          blockers: "None",
+        },
+      ],
+      new Date().toISOString().split("T")[0],
+    );
+    res.json({ success: true, message: "Email sent" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+startDigestJob();
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
