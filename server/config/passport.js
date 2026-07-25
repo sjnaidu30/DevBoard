@@ -18,24 +18,27 @@ passport.use(
           "SELECT * FROM users WHERE github_id = $1",
           [profile.id],
         );
-
         if (existingUser.rows.length > 0) {
-          return done(null, existingUser.rows[0]);
+          const updatedUser = await pool.query(
+            "UPDATE users SET github_access_token = $1, username = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *",
+            [accessToken, profile.username, existingUser.rows[0].id],
+          );
+          return done(null, updatedUser.rows[0]);
         }
 
         const newUser = await pool.query(
-          `INSERT INTO users (github_id, github_access_token, name, email, avatar_url)
-                     VALUES ($1, $2, $3, $4, $5)
-                     RETURNING *`,
+          `INSERT INTO users (github_id, github_access_token, name, username, email, avatar_url)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
           [
             profile.id,
             accessToken,
             profile.displayName || profile.username,
+            profile.username,
             profile.emails?.[0]?.value || null,
             profile.photos?.[0]?.value || null,
           ],
         );
-
         return done(null, newUser.rows[0]);
       } catch (err) {
         return done(err, null);

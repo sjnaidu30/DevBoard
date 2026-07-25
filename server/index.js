@@ -7,6 +7,7 @@ import passport from "./config/passport.js";
 import connectPgSimple from "connect-pg-simple";
 import authRouter from "./routes/auth.js";
 import standupRouter from "./routes/standups.js";
+import commitsRouter from "./routes/commits.js";
 
 dotenv.config({ path: "../.env" });
 const PgSession = connectPgSimple(session);
@@ -35,6 +36,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", authRouter);
 app.use("/api/standups", standupRouter);
+app.use("/api/commits", commitsRouter);
 
 app.get("/", (req, res) => {
   res.send("DevBoard API is running");
