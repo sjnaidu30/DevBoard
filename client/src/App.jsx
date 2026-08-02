@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Standup from "./pages/Standup";
+import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -20,9 +21,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <div style={{ color: "white", padding: "40px" }}>
-                Dashboard — coming soon
-              </div>
+              <Dashboard />
             </ProtectedRoute>
           }
         />
