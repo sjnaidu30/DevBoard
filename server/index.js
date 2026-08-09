@@ -9,13 +9,19 @@ import authRouter from "./routes/auth.js";
 import standupRouter from "./routes/standups.js";
 import commitsRouter from "./routes/commits.js";
 import { startDigestJob } from "./jobs/digestJob.js";
+import rateLimit from "express-rate-limit";
 
 dotenv.config({ path: "../.env" });
 const PgSession = connectPgSimple(session);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(
   session({
@@ -30,6 +36,7 @@ app.use(
       secure: false,
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24,
+      sameSite: "lax",
     },
   }),
 );
@@ -38,7 +45,24 @@ app.use(passport.session());
 app.use("/auth", authRouter);
 app.use("/api/standups", standupRouter);
 app.use("/api/commits", commitsRouter);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: "Too many requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many login attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use("/api", limiter);
+app.use("/auth", authLimiter);
 app.get("/", (req, res) => {
   res.send("DevBoard API is running");
 });
@@ -50,27 +74,7 @@ app.get("/test-db", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-app.get("/test-email", async (req, res) => {
-  try {
-    const { sendDigestEmail } = await import("./services/emailService.js");
-    await sendDigestEmail(
-      process.env.EMAIL_USER,
-      "DevBoard Team",
-      [
-        {
-          name: "Jigisha N",
-          yesterday: "Built standup routes and controllers",
-          today: "Testing email digest",
-          blockers: "None",
-        },
-      ],
-      new Date().toISOString().split("T")[0],
-    );
-    res.json({ success: true, message: "Email sent" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+
 startDigestJob();
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
