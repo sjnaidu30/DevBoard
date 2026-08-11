@@ -4,6 +4,144 @@ import axios from "axios";
 
 const API = "http://localhost:5000";
 
+const styles = {
+  page: {
+    minHeight: "100vh",
+    background: "#0d1117",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    color: "#e6edf3",
+  },
+  header: {
+    background: "#161b22",
+    borderBottom: "0.5px solid #30363d",
+    padding: "12px 24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  logo: { display: "flex", alignItems: "center", gap: "8px" },
+  logoIcon: {
+    width: "24px",
+    height: "24px",
+    background: "#1f6feb",
+    borderRadius: "6px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  nav: { display: "flex", alignItems: "center", gap: "8px" },
+  avatar: { width: "24px", height: "24px", borderRadius: "50%" },
+  userName: { fontSize: "13px", color: "#8b949e" },
+  btnPrimary: {
+    background: "#1f6feb",
+    border: "0.5px solid #388bfd",
+    color: "#fff",
+    padding: "5px 12px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "12px",
+    fontWeight: "500",
+  },
+  btnGhost: {
+    background: "transparent",
+    border: "0.5px solid #30363d",
+    color: "#8b949e",
+    padding: "5px 12px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "12px",
+  },
+  content: { maxWidth: "580px", margin: "0 auto", padding: "32px 24px" },
+  pageTitle: {
+    fontSize: "16px",
+    fontWeight: "500",
+    color: "#e6edf3",
+    margin: "0 0 2px",
+  },
+  pageDate: { fontSize: "13px", color: "#8b949e", margin: "0 0 24px" },
+  label: {
+    fontSize: "10px",
+    color: "#8b949e",
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    display: "block",
+    marginBottom: "6px",
+    fontWeight: "500",
+  },
+  textarea: {
+    width: "100%",
+    background: "#161b22",
+    border: "0.5px solid #30363d",
+    borderRadius: "6px",
+    padding: "10px 12px",
+    color: "#e6edf3",
+    fontSize: "13px",
+    resize: "vertical",
+    boxSizing: "border-box",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    outline: "none",
+    lineHeight: "1.6",
+  },
+  formGroup: { marginBottom: "16px" },
+  commitsBox: {
+    background: "#161b22",
+    border: "0.5px solid #30363d",
+    borderRadius: "8px",
+    padding: "12px 16px",
+    marginBottom: "20px",
+  },
+  commitsLabel: {
+    fontSize: "10px",
+    color: "#8b949e",
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    margin: "0 0 10px",
+    fontWeight: "500",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  commitItem: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "8px",
+    marginBottom: "6px",
+  },
+  commitDot: {
+    width: "5px",
+    height: "5px",
+    borderRadius: "50%",
+    background: "#1f6feb",
+    marginTop: "6px",
+    flexShrink: 0,
+  },
+  submitBtn: (disabled) => ({
+    background: disabled ? "#1a2332" : "#1f6feb",
+    border: "0.5px solid #388bfd",
+    color: disabled ? "#8b949e" : "#fff",
+    padding: "10px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    fontWeight: "500",
+    cursor: disabled ? "not-allowed" : "pointer",
+    width: "100%",
+    opacity: disabled ? 0.6 : 1,
+    marginTop: "8px",
+  }),
+  successBox: {
+    background: "#161b22",
+    border: "0.5px solid #30363d",
+    borderRadius: "10px",
+    overflow: "hidden",
+  },
+  successCell: (last) => ({
+    padding: "14px 16px",
+    borderBottom: last ? "none" : "0.5px solid #30363d",
+  }),
+};
+
 function Standup() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -28,15 +166,14 @@ function Standup() {
         setUser(userRes.data.user);
         setCommits(commitsRes.data.commits);
         setTeams(teamsRes.data.teams);
-        if (teamsRes.data.teams.length > 0) {
+        if (teamsRes.data.teams.length > 0)
           setSelectedTeamId(teamsRes.data.teams[0].id);
-        }
         if (standupRes.data.submitted) {
           setAlreadySubmitted(true);
           setExistingStandup(standupRes.data.standup);
         }
       } catch (err) {
-        console.error("Error loading data:", err);
+        console.error("Error loading:", err);
       } finally {
         setLoading(false);
       }
@@ -46,11 +183,11 @@ function Standup() {
 
   const handleSubmit = async () => {
     if (!form.yesterday || !form.today) {
-      alert("Please fill in yesterday and today fields");
+      alert("Please fill in yesterday and today");
       return;
     }
     if (!selectedTeamId) {
-      alert("No team found. Please contact your manager.");
+      alert("No team found");
       return;
     }
     setSubmitting(true);
@@ -67,61 +204,17 @@ function Standup() {
     }
   };
 
-  const inputStyle = {
-    width: "100%",
-    background: "#161b22",
-    border: "0.5px solid rgba(255,255,255,0.1)",
-    borderRadius: "8px",
-    padding: "12px",
-    color: "#f9fafb",
-    fontSize: "14px",
-    resize: "vertical",
-    boxSizing: "border-box",
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    outline: "none",
-    lineHeight: "1.6",
-  };
-
-  const labelStyle = {
-    color: "#6b7280",
-    fontSize: "11px",
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-    display: "block",
-    marginBottom: "8px",
-    fontWeight: "500",
-  };
-
   const Header = () => (
-    <div
-      style={{
-        background: "#111827",
-        borderBottom: "0.5px solid rgba(255,255,255,0.06)",
-        padding: "14px 32px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <div
-          style={{
-            width: "28px",
-            height: "28px",
-            background: "#2563eb",
-            borderRadius: "7px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+    <div style={styles.header}>
+      <div style={styles.logo}>
+        <div style={styles.logoIcon}>
           <svg
-            width="14"
-            height="14"
+            width="12"
+            height="12"
             viewBox="0 0 24 24"
             fill="none"
             stroke="white"
-            strokeWidth="2"
+            strokeWidth="2.5"
           >
             <rect x="3" y="3" width="7" height="7" />
             <rect x="14" y="3" width="7" height="7" />
@@ -129,35 +222,16 @@ function Standup() {
             <rect x="14" y="14" width="7" height="7" />
           </svg>
         </div>
-        <span style={{ color: "#f9fafb", fontWeight: "600", fontSize: "15px" }}>
+        <span style={{ fontSize: "14px", fontWeight: "500", color: "#e6edf3" }}>
           DevBoard
         </span>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div style={styles.nav}>
         {user && (
-          <img
-            src={user.avatar_url}
-            alt="avatar"
-            style={{ width: "28px", height: "28px", borderRadius: "50%" }}
-          />
+          <img src={user.avatar_url} alt="avatar" style={styles.avatar} />
         )}
-        {user && (
-          <span style={{ color: "#9ca3af", fontSize: "13px" }}>
-            {user.name}
-          </span>
-        )}
-        <button
-          onClick={() => navigate("/dashboard")}
-          style={{
-            background: "transparent",
-            border: "0.5px solid rgba(255,255,255,0.1)",
-            color: "#9ca3af",
-            padding: "6px 14px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "13px",
-          }}
-        >
+        {user && <span style={styles.userName}>{user.name}</span>}
+        <button onClick={() => navigate("/dashboard")} style={styles.btnGhost}>
           Dashboard
         </button>
       </div>
@@ -168,106 +242,59 @@ function Standup() {
     return (
       <div
         style={{
-          minHeight: "100vh",
-          background: "#0d1117",
+          ...styles.page,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <p style={{ color: "#6b7280", fontSize: "14px" }}>Loading...</p>
+        <p style={{ color: "#8b949e", fontSize: "13px" }}>Loading...</p>
       </div>
     );
 
   if (alreadySubmitted)
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#0d1117",
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-        }}
-      >
+      <div style={styles.page}>
         <Header />
-        <div
-          style={{ maxWidth: "600px", margin: "48px auto", padding: "0 24px" }}
-        >
+        <div style={styles.content}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "10px",
-              marginBottom: "24px",
+              gap: "8px",
+              marginBottom: "20px",
             }}
           >
-            <div
-              style={{
-                width: "20px",
-                height: "20px",
-                background: "rgba(16,185,129,0.15)",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#3fb950"
+              strokeWidth="2.5"
             >
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="3"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <h2
-              style={{
-                color: "#f9fafb",
-                fontSize: "18px",
-                fontWeight: "500",
-                margin: 0,
-              }}
-            >
-              Standup submitted
-            </h2>
-            <span style={{ fontSize: "12px", color: "#6b7280" }}>today</span>
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <p style={{ ...styles.pageTitle, margin: 0 }}>Standup submitted</p>
+            <span style={{ fontSize: "12px", color: "#8b949e" }}>today</span>
           </div>
-          <div
-            style={{
-              background: "#111827",
-              border: "0.5px solid rgba(255,255,255,0.08)",
-              borderRadius: "12px",
-              overflow: "hidden",
-            }}
-          >
+          <div style={styles.successBox}>
             {[
               { label: "Yesterday", value: existingStandup.yesterday },
               { label: "Today", value: existingStandup.today },
               { label: "Blockers", value: existingStandup.blockers || "None" },
             ].map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "20px 24px",
-                  borderBottom:
-                    i < 2 ? "0.5px solid rgba(255,255,255,0.06)" : "none",
-                }}
-              >
-                <p style={{ ...labelStyle, marginBottom: "6px" }}>
-                  {item.label}
-                </p>
+              <div key={i} style={styles.successCell(i === 2)}>
+                <p style={styles.label}>{item.label}</p>
                 <p
                   style={{
+                    fontSize: "13px",
                     color:
                       item.label === "Blockers" && existingStandup.blockers
-                        ? "#f87171"
-                        : "#d1d5db",
-                    fontSize: "14px",
+                        ? "#f85149"
+                        : "#8b949e",
                     margin: 0,
-                    lineHeight: "1.6",
+                    lineHeight: "1.5",
                   }}
                 >
                   {item.value}
@@ -277,17 +304,7 @@ function Standup() {
           </div>
           <button
             onClick={() => navigate("/dashboard")}
-            style={{
-              marginTop: "16px",
-              background: "#1d4ed8",
-              border: "none",
-              color: "#fff",
-              padding: "10px 20px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: "500",
-            }}
+            style={{ ...styles.btnPrimary, marginTop: "16px" }}
           >
             View team dashboard →
           </button>
@@ -296,49 +313,34 @@ function Standup() {
     );
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0d1117",
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-      }}
-    >
+    <div style={styles.page}>
       <Header />
-      <div
-        style={{ maxWidth: "600px", margin: "48px auto", padding: "0 24px" }}
-      >
-        <div style={{ marginBottom: "32px" }}>
-          <h1
-            style={{
-              color: "#f9fafb",
-              fontSize: "22px",
-              fontWeight: "500",
-              margin: "0 0 6px",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Daily standup
-          </h1>
-          <p style={{ color: "#6b7280", fontSize: "13px", margin: 0 }}>
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
+      <div style={styles.content}>
+        <p style={styles.pageTitle}>Daily standup</p>
+        <p style={styles.pageDate}>
+          {new Date().toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
 
         {teams.length > 1 && (
-          <div style={{ marginBottom: "20px" }}>
-            <label style={labelStyle}>Posting for team</label>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Posting for team</label>
             <select
               value={selectedTeamId || ""}
               onChange={(e) => setSelectedTeamId(Number(e.target.value))}
-              style={{ ...inputStyle, resize: "none", cursor: "pointer" }}
+              style={{
+                ...styles.textarea,
+                resize: "none",
+                cursor: "pointer",
+                padding: "8px 12px",
+              }}
             >
-              {teams.map((team) => (
-                <option key={team.id} value={team.id}>
-                  {team.name}
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
                 </option>
               ))}
             </select>
@@ -346,135 +348,81 @@ function Standup() {
         )}
 
         {commits.length > 0 && (
-          <div
-            style={{
-              background: "#111827",
-              border: "0.5px solid rgba(37,99,235,0.2)",
-              borderRadius: "10px",
-              padding: "16px 20px",
-              marginBottom: "24px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                marginBottom: "12px",
-              }}
-            >
+          <div style={styles.commitsBox}>
+            <p style={styles.commitsLabel}>
               <svg
-                width="13"
-                height="13"
+                width="11"
+                height="11"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#3b82f6"
+                stroke="#8b949e"
                 strokeWidth="2"
               >
                 <circle cx="12" cy="12" r="3" />
                 <line x1="12" y1="2" x2="12" y2="6" />
                 <line x1="12" y1="18" x2="12" y2="22" />
               </svg>
-              <span
-                style={{
-                  fontSize: "11px",
-                  color: "#6b7280",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                }}
-              >
-                Yesterday's commits
-              </span>
-            </div>
-            {commits.map((commit, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "8px",
-                  marginBottom: i < commits.length - 1 ? "8px" : 0,
-                }}
-              >
-                <div
-                  style={{
-                    width: "5px",
-                    height: "5px",
-                    borderRadius: "50%",
-                    background: "#3b82f6",
-                    marginTop: "6px",
-                    flexShrink: 0,
-                  }}
-                />
+              Yesterday's commits
+            </p>
+            {commits.map((c, i) => (
+              <div key={i} style={styles.commitItem}>
+                <div style={styles.commitDot} />
                 <a
-                  href={commit.commit_url}
+                  href={c.commit_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    color: "#9ca3af",
-                    fontSize: "13px",
+                    fontSize: "12px",
+                    color: "#8b949e",
                     textDecoration: "none",
                     lineHeight: 1.5,
                   }}
                 >
-                  {commit.message}{" "}
-                  <span style={{ color: "#4b5563" }}>· {commit.repo}</span>
+                  {c.message}{" "}
+                  <span style={{ color: "#484f58" }}>· {c.repo}</span>
                 </a>
               </div>
             ))}
           </div>
         )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div>
-            <label style={labelStyle}>What did you do yesterday?</label>
-            <textarea
-              value={form.yesterday}
-              onChange={(e) => setForm({ ...form, yesterday: e.target.value })}
-              rows={3}
-              placeholder="Describe what you worked on..."
-              style={inputStyle}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>What will you do today?</label>
-            <textarea
-              value={form.today}
-              onChange={(e) => setForm({ ...form, today: e.target.value })}
-              rows={3}
-              placeholder="Describe your plan for today..."
-              style={inputStyle}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Any blockers?</label>
-            <textarea
-              value={form.blockers}
-              onChange={(e) => setForm({ ...form, blockers: e.target.value })}
-              rows={2}
-              placeholder="Leave empty if none..."
-              style={inputStyle}
-            />
-          </div>
-          <button
-            onClick={handleSubmit}
-            disabled={submitting}
-            style={{
-              background: submitting ? "#1e3a5f" : "#1d4ed8",
-              border: "0.5px solid #2563eb",
-              color: "#fff",
-              padding: "13px",
-              borderRadius: "8px",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: submitting ? "not-allowed" : "pointer",
-              width: "100%",
-              opacity: submitting ? 0.7 : 1,
-            }}
-          >
-            {submitting ? "Submitting..." : "Submit standup →"}
-          </button>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>What did you do yesterday?</label>
+          <textarea
+            value={form.yesterday}
+            onChange={(e) => setForm({ ...form, yesterday: e.target.value })}
+            rows={3}
+            placeholder="Describe what you worked on..."
+            style={styles.textarea}
+          />
         </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>What will you do today?</label>
+          <textarea
+            value={form.today}
+            onChange={(e) => setForm({ ...form, today: e.target.value })}
+            rows={3}
+            placeholder="Describe your plan for today..."
+            style={styles.textarea}
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Any blockers?</label>
+          <textarea
+            value={form.blockers}
+            onChange={(e) => setForm({ ...form, blockers: e.target.value })}
+            rows={2}
+            placeholder="Leave empty if none..."
+            style={styles.textarea}
+          />
+        </div>
+        <button
+          onClick={handleSubmit}
+          disabled={submitting}
+          style={styles.submitBtn(submitting)}
+        >
+          {submitting ? "Submitting..." : "Submit standup →"}
+        </button>
       </div>
     </div>
   );
