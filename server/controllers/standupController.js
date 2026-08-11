@@ -1,6 +1,4 @@
 import pool from "../db/index.js";
-import sanitizeHtml from "sanitize-html";
-
 import xss from "xss";
 
 const clean = (str) => (str ? xss(str, { whiteList: {} }) : str);
