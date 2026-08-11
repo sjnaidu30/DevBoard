@@ -11,7 +11,9 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/auth/me");
+        const res = await axios.get(
+          "https://devboard-production-d6d6.up.railway.app/auth/me",
+        );
         if (res.data.user) {
           setUser(res.data.user);
           setLoading(false);

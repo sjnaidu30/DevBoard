@@ -1,6 +1,7 @@
 function Login() {
   const handleLogin = () => {
-    window.location.href = "http://localhost:5000/auth/github";
+    window.location.href =
+      "https://devboard-production-d6d6.up.railway.app/auth/github";
   };
 
   return (
