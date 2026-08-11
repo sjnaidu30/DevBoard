@@ -91,3 +91,18 @@ export const getTeamStandups = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+export const getMyTeams = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT t.id, t.name, t.manager_id
+             FROM teams t
+             JOIN team_members tm ON t.id = tm.team_id
+             WHERE tm.user_id = $1 AND tm.is_active = true AND t.is_active = true`,
+      [req.user.id],
+    );
+
+    res.json({ teams: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

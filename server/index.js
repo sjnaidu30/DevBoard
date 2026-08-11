@@ -12,10 +12,29 @@ import { startDigestJob } from "./jobs/digestJob.js";
 import rateLimit from "express-rate-limit";
 
 dotenv.config({ path: "../.env" });
+
 const PgSession = connectPgSimple(session);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Rate limiters
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: "Too many requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many login attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Core middleware
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -42,37 +61,19 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Apply rate limiters before routes
+app.use("/api", limiter);
+app.use("/auth", authLimiter);
+
+// Routes
 app.use("/auth", authRouter);
 app.use("/api/standups", standupRouter);
 app.use("/api/commits", commitsRouter);
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: { error: "Too many requests, please try again later" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: "Too many login attempts, please try again later" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use("/api", limiter);
-app.use("/auth", authLimiter);
+// Base routes
 app.get("/", (req, res) => {
   res.send("DevBoard API is running");
-});
-app.get("/test-db", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT NOW()");
-    res.json({ success: true, time: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
 });
 
 startDigestJob();
