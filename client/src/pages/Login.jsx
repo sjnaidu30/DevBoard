@@ -72,9 +72,7 @@ function Login() {
               borderRadius: "99px",
               border: "0.5px solid rgba(37,99,235,0.4)",
             }}
-          >
-            beta
-          </span>
+          ></span>
         </div>
 
         {/* Headline */}
@@ -102,7 +100,7 @@ function Login() {
             }}
           >
             Post your update in 60 seconds. GitHub commits surface
-            automatically. Manager gets a digest at 9 AM — no meeting needed.
+            automatically. Manager gets a digest at 9 AM - no meeting needed.
           </p>
         </div>
 
