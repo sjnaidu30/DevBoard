@@ -1,8 +1,9 @@
 import pool from "../db/index.js";
 import sanitizeHtml from "sanitize-html";
 
-const clean = (str) =>
-  str ? sanitizeHtml(str, { allowedTags: [], allowedAttributes: {} }) : str;
+import xss from "xss";
+
+const clean = (str) => (str ? xss(str, { whiteList: {} }) : str);
 
 export const createStandup = async (req, res) => {
   try {
