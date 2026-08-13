@@ -18,7 +18,7 @@ router.get("/github/callback", (req, res, next) => {
       if (!user) return res.redirect("/auth/failure");
       req.logIn(user, (err) => {
         if (err) return next(err);
-        res.redirect("http://localhost:5173/dashboard");
+        res.redirect("https://dev-board-swart.vercel.app/standup");
       });
     },
   )(req, res, next);
