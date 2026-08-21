@@ -52,12 +52,12 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      secure: false,
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24,
-      sameSite: "lax",
-    },
+cookie: {
+    secure: true,
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24,
+    sameSite: "none",
+},
   }),
 );
 app.use(passport.initialize());
