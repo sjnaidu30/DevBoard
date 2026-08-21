@@ -37,8 +37,8 @@ const authLimiter = rateLimit({
 // Core middleware
 app.use(
   cors({
-    origin: "https://dev-board-swart.vercel.app",
-    credentials: true,
+        origin: process.env.FRONTEND_URL,
+credentials: true,
   }),
 );
 app.use(express.json());
