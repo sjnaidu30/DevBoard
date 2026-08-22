@@ -1,41 +1,30 @@
-import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import axios from "axios";
-
-axios.defaults.withCredentials = true;
+import { useState, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 
 function ProtectedRoute({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const token = localStorage.getItem('devboard_user')
+    if (token) {
       try {
-        const res = await axios.get(
-          "https://devboard-production-d6d6.up.railway.app/auth/me",
-        );
-        if (res.data.user) {
-          setUser(res.data.user);
-          setLoading(false);
-        } else {
-          setLoading(false);
-        }
+        const userData = JSON.parse(atob(token))
+        setUser(userData)
       } catch {
-        setLoading(false);
+        localStorage.removeItem('devboard_user')
       }
-    };
+    }
+    setLoading(false)
+  }, [])
 
-    checkAuth();
-  }, []);
-
-  if (loading)
-    return (
-      <div style={{ color: "white", textAlign: "center", marginTop: "40vh" }}>
-        Loading...
-      </div>
-    );
-  if (!user) return <Navigate to="/login" />;
-  return children;
+  if (loading) return (
+    <div style={{ color: 'white', textAlign: 'center', marginTop: '40vh' }}>
+      Loading...
+    </div>
+  )
+  if (!user) return <Navigate to="/login" />
+  return children
 }
 
-export default ProtectedRoute;
+export default ProtectedRoute

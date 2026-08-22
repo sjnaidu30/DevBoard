@@ -6,30 +6,29 @@ const router = express.Router();
 router.get("/github/callback", (req, res, next) => {
   console.log("Callback hit");
   console.log("Query params:", req.query);
-  passport.authenticate(
-    "github",
-    {
-      failureRedirect: "/auth/failure",
-      failureMessage: true,
-    },
-    (err, user, info) => {
-      console.log("Passport callback:", { err, user: !!user, info });
+  passport.authenticate("github", {
+    failureRedirect: "/auth/failure",
+    failureMessage: true,
+  }, (err, user, info) => {
+    console.log("Passport callback:", { err, user: !!user, info });
+    if (err) return next(err);
+    if (!user) return res.redirect("/auth/failure");
+    req.logIn(user, (err) => {
       if (err) return next(err);
-      if (!user) return res.redirect("/auth/failure");
-      req.logIn(user, (err) => {
-        if (err) return next(err);
-        res.redirect(`${process.env.FRONTEND_URL}/standup`);
-      });
-    },
-  )(req, res, next);
+      const token = Buffer.from(JSON.stringify({
+        id: user.id,
+        name: user.name,
+        avatar_url: user.avatar_url,
+        role: user.role
+      })).toString('base64')
+      res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`)
+    });
+  })(req, res, next);
 });
 
-router.get(
-  "/github",
-  passport.authenticate("github", {
-    scope: ["user:email"],
-  }),
-);
+router.get("/github", passport.authenticate("github", {
+  scope: ["user:email"],
+}));
 
 router.get("/me", (req, res) => {
   if (req.user) {
