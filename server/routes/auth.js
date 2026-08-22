@@ -1,26 +1,23 @@
 import express from "express";
 import passport from "../config/passport.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
 router.get("/github/callback", (req, res, next) => {
-  console.log("Callback hit");
-  console.log("Query params:", req.query);
   passport.authenticate("github", {
     failureRedirect: "/auth/failure",
     failureMessage: true,
   }, (err, user, info) => {
-    console.log("Passport callback:", { err, user: !!user, info });
     if (err) return next(err);
     if (!user) return res.redirect("/auth/failure");
     req.logIn(user, (err) => {
       if (err) return next(err);
-      const token = Buffer.from(JSON.stringify({
-        id: user.id,
-        name: user.name,
-        avatar_url: user.avatar_url,
-        role: user.role
-      })).toString('base64')
+      const token = jwt.sign(
+        { id: user.id, name: user.name, avatar_url: user.avatar_url, role: user.role },
+        process.env.SESSION_SECRET,
+        { expiresIn: '7d' }
+      )
       res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`)
     });
   })(req, res, next);
