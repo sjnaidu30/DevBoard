@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 import pool from "../db/index.js";
 
 dotenv.config({ path: "../.env" });
-
+console.log('GitHub Client ID:', process.env.GITHUB_CLIENT_ID ? 'loaded' : 'MISSING')
+console.log('Callback URL:', `${process.env.RAILWAY_URL}/auth/github/callback`)
 passport.use(
   new GitHubStrategy(
     {

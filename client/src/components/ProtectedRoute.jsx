@@ -6,13 +6,17 @@ function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('devboard_user')
+    const token = localStorage.getItem('devboard_token')
     if (token) {
       try {
-        const userData = JSON.parse(atob(token))
-        setUser(userData)
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        if (payload.exp * 1000 > Date.now()) {
+          setUser(payload)
+        } else {
+          localStorage.removeItem('devboard_token')
+        }
       } catch {
-        localStorage.removeItem('devboard_user')
+        localStorage.removeItem('devboard_token')
       }
     }
     setLoading(false)

@@ -8,7 +8,7 @@ function AuthCallback() {
   useEffect(() => {
     const token = params.get('token')
     if (token) {
-      localStorage.setItem('devboard_user', token)
+      localStorage.setItem('devboard_token', token)
       navigate('/standup')
     } else {
       navigate('/login')

@@ -4,5 +4,8 @@
   "scripts": {
     "start": "cd server && npm start",
     "build": "cd server && npm install"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.3"
   }
 }
